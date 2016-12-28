@@ -1,0 +1,15 @@
+---
+
+- name: stop cowrie
+  command: "{{ cowrie_home }}/stop.sh"
+  args:
+    removes: "{{ cowrie_pid_file }}"
+  become_user: "{{ cowrie_user }}"
+
+- name: start cowrie
+  command: "{{ cowrie_home }}/start.sh"
+  args:
+    creates: "{{ cowrie_pid_file }}"
+  environment:
+    PATH: "/usr/local/bin:/usr/local/sbin:{{ ansible_env.PATH }}"
+  become_user: "{{ cowrie_user }}"

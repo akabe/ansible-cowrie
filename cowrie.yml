@@ -1,0 +1,7 @@
+---
+
+- hosts: cowrie
+  gather_facts: true
+  become: true
+  roles:
+    - cowrie

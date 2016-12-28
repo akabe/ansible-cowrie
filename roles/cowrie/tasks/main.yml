@@ -1,0 +1,70 @@
+---
+
+- name: yum upgrade
+  yum: name=* state=latest
+
+- name: yum install
+  yum: name="{{ item }}" state=present
+  with_items:
+    - gcc
+    - python27-pip
+    - libffi-devel  # required by pyopenssl
+    - openssl-devel # required by pyopenssl
+    - gmp-devel     # required by gmpy2
+    - mpfr-devel    # required by gmpy2
+    - libmpc-devel  # required by gmpy2
+
+- name: pip install
+  pip: name="{{ item }}" state=present
+  with_items:
+    - twisted==15.2.0
+    - cryptography
+    - configparser
+    - pyopenssl
+    - gmpy2
+    - service_identity
+    - pycrypto
+    - python-dateutil
+    - tftpy
+    - csirtgsdk
+
+- group: name="{{ cowrie_group }}"
+
+- user:
+    name: "{{ cowrie_user }}"
+    groups: "{{ cowrie_group }}"
+    createhome: false
+
+- get_url:
+    url: "https://github.com/micheloosterhof/cowrie/archive/v{{ cowrie_version }}.tar.gz"
+    dest: "/tmp/cowrie-{{ cowrie_version }}.tar.gz"
+    checksum: sha256:23bc31ec60b66a23ee0225123955ff65139df3b00ffa0fdbb54d3e2746d1cd53
+  register: cowrie_download_result
+
+- unarchive:
+    src: "{{ cowrie_download_result.dest }}"
+    dest: "{{ cowrie_install_dir }}"
+    owner: cowrie
+    group: cowrie
+    remote_src: true
+  register: cowrie_unarhive_result
+
+- name: put cowrie.cfg
+  template:
+    src: cowrie.cfg
+    dest: "{{ cowrie_home }}/cowrie.cfg"
+    owner: cowrie
+    group: cowrie
+  notify:
+    - stop cowrie
+    - start cowrie
+
+- name: put data/userdb.txt
+  template:
+    src: data/userdb.txt
+    dest: "{{ cowrie_home }}/data/userdb.txt"
+    owner: cowrie
+    group: cowrie
+  notify:
+    - stop cowrie
+    - start cowrie
