@@ -28,20 +28,24 @@
     - tftpy
     - csirtgsdk
 
-- group: name="{{ cowrie_group }}"
+- name: create user group
+  group: name="{{ cowrie_group }}"
 
-- user:
+- name: create user
+  user:
     name: "{{ cowrie_user }}"
     groups: "{{ cowrie_group }}"
     createhome: false
 
-- get_url:
+- name: download cowrie
+  get_url:
     url: "https://github.com/micheloosterhof/cowrie/archive/v{{ cowrie_version }}.tar.gz"
     dest: "/tmp/cowrie-{{ cowrie_version }}.tar.gz"
     checksum: sha256:23bc31ec60b66a23ee0225123955ff65139df3b00ffa0fdbb54d3e2746d1cd53
   register: cowrie_download_result
 
-- unarchive:
+- name: unarchive tarball
+  unarchive:
     src: "{{ cowrie_download_result.dest }}"
     dest: "{{ cowrie_install_dir }}"
     owner: cowrie
