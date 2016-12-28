@@ -6,7 +6,7 @@ Ansible playbook for Cowrie (https://github.com/micheloosterhof/cowrie)
 ansible-playbook -i inventory cowrie.yml
 ```
 
-where file inventory is
+where `inventory` is
 
 ```
 [cowrie]
